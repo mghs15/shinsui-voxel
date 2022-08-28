@@ -9,11 +9,6 @@
 <style>
 body { margin:0; padding:0;}
 
-:root {
-  --main-color: #00ff66;
-  --text-color: #ffffff;
-}
-
 #map {
   position: absolute;
   top: 0;
@@ -30,17 +25,52 @@ table.popup-table {
   width: 100%;
 }
 
+#alert {
+  diplay: block;
+  z-index: 100000;
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  margin: auto;
+  padding: 24px;
+  border-radius: 8px;
+  border: 2px solid #000000;
+  background-color: #FFFFFF;
+  overflow: auto;
+}
 
 </style>
 <body>
+
+<div id='alert'>
+<p>このサイトでは、<a href='https://disaportal.gsi.go.jp/hazardmap/copyright/opendata.html#l2shinsuishin' target='_blank'>ハザードマップポータルの
+洪水浸水想定区域（想定最大規模）データ</a>を加工して利用しています。
+以下の注意書きを確認してご利用ください。
+</p>
+<p>
+本データは、洪水浸水想定区域（想定最大規模）_国管理河川と洪水浸水想定区域（想定最大規模）_都道府県管理河川のデータを統合したものです。
+都道府県管理河川につきましては、都道府県の許諾を得てタイルデータの配信を行っているため、一部の都道府県のデータ配信のみとなっております。
+なお、東京都の公表図面では浸水深0.1m未満の区域は着色されていないため、本サイトにおいても同様の表現としております。
+香川県のデータにつきましては、下記利用条件をご確認ください。
+利用条件：提供したデータを利用することによって、利用者及び第三者に発生する直接または間接の損失、損害および障害等について、香川県は一切の責任を負わないこと。
+</p>
+<button onclick='closeAlert()'>了承</button><button onclick='exitSite()'>閲覧をやめる</button>
+</div> 
 
 <div id='map'></div>
 
 <script>
 
-const g = {
-  'targetPointLngLat': null
+const closeAlert = () => {
+  document.getElementById('alert').style.display = 'none';
 }
+
+const exitSite = () => {
+  window.location.href = "https://github.com/mghs15/shinsui-voxel";
+}
+
 
 
 /*************************************************/
