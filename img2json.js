@@ -54,17 +54,13 @@ const infoFromColor = ( r, g, b ) => {
 }
 
 
-  
 const img2json = (z, x, y) => {
-
-  let res = "";
-
 
   const url = `https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/${z}/${x}/${y}.png`;
 
   const promiseSet = [];
 
-  fetch( url )
+  return fetch( url )
     .then(response => {
       console.log(`${z}/${x}/${y} -> ${response.statusText}`);
       return response.blob();
@@ -82,6 +78,8 @@ const img2json = (z, x, y) => {
         
     })
     .then( buf => {
+      
+      let res = "";
       
       const ch = buf.length / ( 256 * 256 );
       
@@ -127,29 +125,44 @@ const img2json = (z, x, y) => {
         
       }
       
-      return Promise.resolve();
+      return res;
       
     })
-    .then( v => {
-      fs.writeFileSync(`./dst/${z}-${x}-${y}.ndjson`, res);
+    .then( res => {
+      fs.writeFile(`./dst/${z}-${x}${y}.ndjson`, res, (e) => {
+        if(e){
+          console.log(`ERROR ${z}/${x}/${y} (write file)`);
+          console.log(e);
+        }
+      });
     })
     .catch( e => {
       console.log(`ERROR ${z}/${x}/${y}`);
       console.log(e);
     });
-
+  
 }
 
+const promiseSet = [];
 
-for( let xi = 7270; xi < 7280; xi++){
-  for( let yi = 3216; yi < 3230 ; yi++){
+for( let xi = 7270; xi < 7272; xi++){ //7280
+  for( let yi = 3216; yi < 3218 ; yi++){ //3230
   
-    img2json(13, xi, yi);
-  
+    const pm = img2json(13, xi, yi);
+    
+    promiseSet.push(pm);
+    
   }
 }
 
 
-
+Promise.all(promiseSet)
+  .then( values => {
+    console.log(`COMPLETED`);
+  })
+  .catch( e => {
+    console.log(`ERROR`);
+    console.log(e);
+  });
 
 
