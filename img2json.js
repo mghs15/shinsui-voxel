@@ -135,6 +135,9 @@ const img2json = (z, x, y) => {
           console.log(e);
         }
       });
+      
+      return (`${z}/${x}/${y}`);
+      
     })
     .catch( e => {
       console.log(`ERROR ${z}/${x}/${y}`);
@@ -158,6 +161,7 @@ for( let xi = 7270; xi < 7272; xi++){ //7280
 
 Promise.all(promiseSet)
   .then( values => {
+    console.log(values);
     console.log(`COMPLETED`);
   })
   .catch( e => {
