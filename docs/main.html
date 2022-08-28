@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<title>Web地図テンプレ</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.13.2/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.13.2/mapbox-gl.css' rel='stylesheet' />
+<style>
+body { margin:0; padding:0;}
+
+:root {
+  --main-color: #00ff66;
+  --text-color: #ffffff;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+table.popup-table {
+  //border-collapse: collapse;
+  border-top: solid 1px;
+  border-bottom: solid 1px;
+  margin-top: 5px;
+  width: 100%;
+}
+
+
+</style>
+<body>
+
+<div id='map'></div>
+
+<script>
+
+const g = {
+  'targetPointLngLat': null
+}
+
+
+/*************************************************/
+/*Mapbox 関係設定                                */
+/*************************************************/
+const map = new mapboxgl.Map({
+  container: 'map', // container id
+  hash: true, //add #position on URL
+  style: './style.json', // stylesheet location
+  center: [139.78148, 35.768793], // starting position [lng, lat]
+  zoom: 9, // starting zoom
+  minZoom: 6,
+  maxZoom: 17.99,
+  attributionControl: false,
+  //clickTolerance: 10,
+  localIdeographFontFamily: ['MS Gothic', 'Hiragino Kaku Gothic Pro', 'sans-serif']
+});
+
+
+map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+map.addControl(new mapboxgl.ScaleControl() );
+map.addControl(new mapboxgl.AttributionControl({compact: true}), 'top-right');
+
+map.showTileBoundaries = false;
+
+map.on('load', function() {
+  map.addSource('shinsui', {
+    "type":"vector",
+    "tiles":["https://mghs15.github.io/shinsui-voxel/tile/{z}/{x}/{y}.pbf"],
+    "maxzoom":12,"minzoom":12,"attribution":"<a href='https://disaportal.gsi.go.jp/hazardmap/copyright/opendata.html#l2shinsuishin' target='_blank'>ハザードマップポータルのデータ</a>を加工"
+  });
+  
+  map.addLayer({
+    id: 'flood-depth-L2',
+    type: 'fill-extrusion',
+    'source':'shinsui',
+    'source-layer':'suibou',
+    "maxzoom":22,
+    "minzoom":12,
+    'filter':['>', ['get', 'depth'], 0],
+    layout: {},
+    paint: {
+      "fill-extrusion-color":['rgb',
+        ['get', 'r'],
+        ['get', 'g'],
+        ['get', 'b']
+      ],
+      "fill-extrusion-opacity":0.8,
+      "fill-extrusion-height":['get', 'depth']
+    }
+  });
+  
+  
+});
+
+
+
+
+const makePopupHtml = (prop) => {
+  
+  let htmlString = ""; //ポップアップ
+  let featureProperties = "";
+  for(name in prop){
+    featureProperties = featureProperties + "<tr><td style='vertical-align:top; color:#555555;'>" + name + "</td>"
+                      + "<td style='color:#000000;'>" + prop[name] + "</td></tr>";
+  }
+  htmlString = htmlString + "<table class='popup-table'>" + featureProperties + "</table>";
+  
+  return htmlString;
+  
+}
+
+const popup = new mapboxgl.Popup();
+map.on('click', function(e) {
+  
+  //初期化
+  popup.remove();
+  
+  //レンダリングされた地物を取得
+  const features = map.queryRenderedFeatures(e.point);
+  
+  if (!features.length) {
+    popup.remove();
+    return;
+  }
+  
+  //ポップアップ表示処理
+  let htmlString = "";
+  features.forEach( feature => {
+    htmlString = htmlString + makePopupHtml(feature.properties);
+    console.log(feature.properties);
+  });
+  
+  if (!htmlString || htmlString == "") {
+    popup.remove();
+    return;
+  }
+  
+  popup.setLngLat([ e.lngLat.lng, e.lngLat.lat ])
+    .setHTML(htmlString)
+    .addTo(map);
+});
+
+
+
+</script>
+
+</body>
+</html>
