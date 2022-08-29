@@ -63,14 +63,14 @@ const img2json = (z, x, y) => {
   return fetch( url )
     .then(response => {
       console.log(`${z}/${x}/${y} -> ${response.statusText}`);
-      return response.blob();
-    })
-    .then( blob => {
-      return blob.arrayBuffer();
+      return response.arrayBuffer();
     })
     .then( data => {
       
-      const buf = new Uint8Array(data);
+      //const buf = new Uint8Array(data);
+      const buf = Buffer.from(data);
+      
+      //console.log(buf);
       
       return sharp( buf )
         .raw()
@@ -104,6 +104,7 @@ const img2json = (z, x, y) => {
             "r": r,
             "g": g,
             "b": b,
+            "i": i,
             //"x": xx,
             //"y": yy
           },
@@ -129,10 +130,10 @@ const img2json = (z, x, y) => {
       
     })
     .then( res => {
-      fs.writeFile(`./dst/${z}-${x}${y}.ndjson`, res, (e) => {
+      fs.writeFile(`./dst/${z}-${x}-${y}.ndjson`, res, (e) => {
         if(e){
           console.log(`ERROR ${z}/${x}/${y} (write file)`);
-          console.log(e);
+          console.error(e);
         }
       });
       
