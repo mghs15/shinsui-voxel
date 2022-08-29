@@ -58,8 +58,6 @@ const img2json = (z, x, y) => {
 
   const url = `https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/${z}/${x}/${y}.png`;
 
-  const promiseSet = [];
-
   return fetch( url )
     .then(response => {
       console.log(`${z}/${x}/${y} -> ${response.statusText}`);
