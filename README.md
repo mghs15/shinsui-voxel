@@ -12,6 +12,9 @@ https://mghs15.github.io/shinsui-voxel/main.html
 1. `img2json.js`(浸水深だけ取得)か`img2jsonWithElev.js`(浸水深と標高の両方取得)でタイルデータからGeoJSONを作成し、`dst`へ格納。
 2. `tiler.js`で`dst`内のGeoJSONをベクトルタイルへ変換。
 
+## blog
+https://qiita.com/mg_kudo/items/7ee95f1d79a26d86bef2
+
 ## 使用データ・ライブラリ等
 * 洪水浸水想定区域（想定最大規模） https://disaportal.gsi.go.jp/hazardmap/copyright/opendata.html#l2shinsuishin
 * sharp https://www.npmjs.com/package/sharp
